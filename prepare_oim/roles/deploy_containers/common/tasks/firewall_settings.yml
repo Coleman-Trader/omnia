@@ -70,3 +70,17 @@
 - name: Display open ports for verification
   ansible.builtin.command: firewall-cmd --list-all
   changed_when: true
+
+- name: Create firewall settings directory
+  when: hostvars['localhost']['enable_oim_ha'] | default(false)
+  ansible.builtin.file:
+    path: "{{ omnia_nfs_share }}/firewall"
+    state: directory
+    mode: "0644"
+
+- name: Copy current firewall configuration settings to NFS share
+  when: hostvars['localhost']['enable_oim_ha'] | default(false)
+  ansible.builtin.copy:
+    src: "{{ firewalld_directory}}/zones"
+    dest: "{{ omnia_nfs_share }}/firewall"
+    remote_src: true

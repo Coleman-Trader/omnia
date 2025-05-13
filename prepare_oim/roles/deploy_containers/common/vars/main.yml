@@ -17,6 +17,8 @@
 omnia_metadata_file: "/opt/omnia/.data/oim_metadata.yml"
 
 # Usage: firewall_settings.yml
+omnia_nfs_share: "{{ oim_shared_path }}/omnia"
+firewalld_directory: "/etc/firewalld"
 oim_os_repo_fail_msg: |
   Failed to install firewalld. This could be due to the OS repository not being configured on OIM.
   Please configure the OS repository on OIM and rerun the playbook.
