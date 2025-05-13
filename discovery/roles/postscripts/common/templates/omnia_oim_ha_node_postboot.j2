@@ -63,6 +63,15 @@ cp {{ oim_shared_path }}/omnia/ssh_config/.ssh/oim_rsa /root/.ssh/oim_rsa
 cp {{ oim_shared_path }}/omnia/ssh_config/.ssh/config /root/.ssh/config
 
 systemctl daemon-reload
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+
+echo -e "INFO: Copying firewall settings from NFS." >> "$LOGFILE"
+cp -a {{ oim_shared_path }}/omnia/firewall/zones/. /etc/firewalld/zones
+
+echo -e "INFO: Reloading firewall configs." >> "$LOGFILE"
+sudo firewall-cmd --reload
+
 # Enable and start podman.socket
 echo -e "INFO: Enabling and starting the podman socket." >> "$LOGFILE"
 sudo systemctl enable podman.socket || { echo "ERROR: Enabling podman.socket." >> "$LOGFILE"; exit 1; }
