@@ -45,7 +45,7 @@ if ! ifconfig | grep -w {{ hostvars['omnia_provision']['admin_nic'] }}; then
     done
 
     if [ -z "$INTERFACE" ]; then
-        echo "ERROR:: No admin interface found." >> "$LOGFILE"
+        echo "ERROR: No admin interface found." >> "$LOGFILE"
         exit 1
     fi
 
@@ -54,7 +54,7 @@ if ! ifconfig | grep -w {{ hostvars['omnia_provision']['admin_nic'] }}; then
     # 70-persistent-net.rules must be used as the file for consistent interface naming
     [ -f {{ persistent_rules_file }} ] || touch {{ persistent_rules_file }}
     echo "SUBSYSTEM==\"net\",ACTION==\"add\",ATTR{address}==\"${MAC}\",ATTR{type}==\"${TYPE}\",NAME=\"{{ hostvars['omnia_provision']['admin_nic'] }}\"" >> {{ persistent_rules_file }}
-    CONNECTION_PROFILE=$(nmcli -f name,device connection show | grep -w ${INTERFACE} | cut -d' ' -f1)
+    CONNECTION_PROFILE=$(nmcli -f name,device connection show | grep -w ${INTERFACE} | cut -d' ' -f1 | head -n 1)
     nmcli connection modify ${CONNECTION_PROFILE} connection.interface-name ""
     nmcli connection modify ${CONNECTION_PROFILE} match.interface-name {{ hostvars['omnia_provision']['admin_nic'] }} || { echo "ERROR: Using nmcli to match the interface name." >> "$LOGFILE"; exit 1; }
 

@@ -27,6 +27,8 @@ if [ $(ip route | grep default | wc -l) -gt 1 ]; then
     # Remove the admin nic as a default route if there are multiple default routes
     # Note: No need to restart network manager as it automatically removes any default routes associated with the NIC
     if ip route | grep default | grep -q {{ hostvars['omnia_provision']['admin_nic'] }}; then
+        CONNECTION_PROFILE=$(nmcli -f name,device connection show | grep -w {{ hostvars['omnia_provision']['admin_nic'] }} | cut -d' ' -f1 | head -n 1)
+        nmcli connection modify ${CONNECTION_PROFILE} ipv4.never-default yes >> "$LOGFILE"
         nmcli device modify {{ hostvars['omnia_provision']['admin_nic'] }} ipv4.never-default yes >> "$LOGFILE"
     else
         echo "Admin NIC is not in a default route, skipping." >> "$LOGFILE"
